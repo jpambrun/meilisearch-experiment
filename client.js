@@ -29,8 +29,8 @@ const SearchQuery = () => {
         doSearch('search', {
             q: query,
             matches: true,
-            filter: 'modality = xa AND date > 1536316958816',
-            sort: ["date:desc"]
+            // filter: 'modality = xa AND date > 1536316958816',
+            sort: ["name:asc","date:desc"]
         }).then((data) => {
             data?.hits?.forEach(h => {
                 h.dob = (new Date(h.dob)).toISOString().split('T')[0]
