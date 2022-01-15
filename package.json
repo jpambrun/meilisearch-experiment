@@ -1,0 +1,29 @@
+{
+  "name": "search",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel  --presets @babel/preset-react client.js -o cli.j",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "cli-table3": "^0.6.1",
+    "faker": "^5.5.3",
+    "ink": "^3.2.0",
+    "ink-table": "^3.0.0",
+    "ink-text-input": "^4.0.2",
+    "meilisearch": "^0.24.0",
+    "react": "^17.0.2",
+    "terminal-kit": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.16.8",
+    "@babel/core": "^7.16.7",
+    "@babel/preset-env": "^7.16.8",
+    "@babel/preset-react": "^7.16.7"
+  }
+}
