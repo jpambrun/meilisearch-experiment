@@ -24,22 +24,22 @@ const { MeiliSearch } = require('meilisearch');
     // return
 
     const index = client.index('studies')
-    index.updateSearchableAttributes([
-        'id',
-        'studyDescription',
-        'name',
-        'mrn',
-        'accessionNumber',
-        'patientId',
-        'org',
-      ])
-    index.updateFilterableAttributes([
-        'sex',
-        'modality',
-        'dob',
-        'date',
-    ])
     index.updateSettings({
+        searchableAttributes: [
+            'id',
+            'studyDescription',
+            'name',
+            'mrn',
+            'accessionNumber',
+            'patientId',
+            'org',
+        ],
+        filterableAttributes: [
+            'sex',
+            'modality',
+            'dob',
+            'date',
+        ],
         sortableAttributes: [
             'date',
             'name',
@@ -75,7 +75,7 @@ const { MeiliSearch } = require('meilisearch');
     for (let b = 0; b < 20000; b++) {
 
         for (let i = 0; i < 1000; i++) {
-            const patient = patients[(b*1000 + i) % patients.length];
+            const patient = patients[(b * 1000 + i) % patients.length];
 
             const exam = {
                 id: faker.helpers.replaceSymbols('??????#####'),
