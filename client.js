@@ -11,6 +11,16 @@ String.prototype.splice = function (index, count, add) {
     return chars.join('');
 }
 
+// const CustomCell = ({ children }) => {
+//     if (children.includes('▒')) {
+//         const split = children.split('▒')
+//         return (<><Text>{split[0]}</Text><Text bold color="white">{split[1]}</Text><Text>{split[2]}</Text></>)
+//     } else {
+//         return (<Text>{children}</Text>)
+//     }
+// }
+
+
 
 const SearchQuery = () => {
     const [query, setQuery] = useState('paul');
@@ -20,8 +30,8 @@ const SearchQuery = () => {
             data?.hits?.forEach(h => {
                 if (h._matchesInfo) {
                     for (const [key, value] of Object.entries(h._matchesInfo)) {
-                        h[key] = h[key].splice(value[0].start, 0, '\x1b[1m')
-                        h[key] = h[key].splice(value[0].start + value[0].length + '\x1b[0m'.length, 0, '\x1b[0m')
+                        h[key] = h[key].splice(value[0].start, 0, '▒')
+                        h[key] = h[key].splice(value[0].start + value[0].length + '▒'.length, 0, '▒')
                     }
                     delete h._matchesInfo
                 }
@@ -42,7 +52,10 @@ const SearchQuery = () => {
                 </Box>
             </Box>
             <Newline />
-            <Table data={data?.hits ? data?.hits?.slice(0, 5) : []} />
+            <Table
+                // cell={CustomCell}
+                data={data?.hits ? data?.hits?.slice(0, 5) : []}
+            />
         </>
     );
 };
