@@ -26,8 +26,15 @@ const SearchQuery = () => {
     const [query, setQuery] = useState('paul');
     const [data, setData] = useState([]);
     useEffect(() => {
-        doSearch('search', { q: query, matches: true }).then((data) => {
+        doSearch('search', {
+            q: query,
+            matches: true,
+            filter: 'modality = xa AND date > 1536316958816',
+            sort: ["date:desc"]
+        }).then((data) => {
             data?.hits?.forEach(h => {
+                h.dob = (new Date(h.dob)).toISOString().split('T')[0]
+                h.date = (new Date(h.date)).toISOString().split('T')[0]
                 if (h._matchesInfo) {
                     for (const [key, value] of Object.entries(h._matchesInfo)) {
                         h[key] = h[key].splice(value[0].start, 0, '▒')
