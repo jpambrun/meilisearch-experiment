@@ -3,19 +3,30 @@ import { render, Box, Text, Newline } from 'ink';
 import TextInput from 'ink-text-input';
 import Table from 'ink-table'
 const bent = require('bent')
-const doSearch = bent('http://127.0.0.1:7700/indexes/studies/search', 'GET', 'json', 200);
+const doSearch = bent('http://127.0.0.1:7700/indexes/studies/', 'POST', 'json', 200);
+
+String.prototype.splice = function (index, count, add) {
+    var chars = this.split('');
+    chars.splice(index, count, add);
+    return chars.join('');
+}
 
 
 const SearchQuery = () => {
-    const [query, setQuery] = useState('?matches=true&q=paul');
+    const [query, setQuery] = useState('paul');
     const [data, setData] = useState([]);
     useEffect(() => {
-        doSearch(query).then((data) => {
+        doSearch('search', { q: query, matches: true }).then((data) => {
             data?.hits?.forEach(h => {
-                h.name = 'YO!!'+  '\u001b[31m' + h.name + '\u001b[39m';
+                if (h._matchesInfo) {
+                    for (const [key, value] of Object.entries(h._matchesInfo)) {
+                        h[key] = h[key].splice(value[0].start, 0, '\x1b[1m')
+                        h[key] = h[key].splice(value[0].start + value[0].length + '\x1b[0m'.length, 0, '\x1b[0m')
+                    }
+                    delete h._matchesInfo
+                }
             });
             setData(data)
-            // console.log(data.hits[0]._matchesInfo);process.exit(0)
         })
     }, [query])
     return (
@@ -31,11 +42,7 @@ const SearchQuery = () => {
                 </Box>
             </Box>
             <Newline />
-            <Table data={data?.hits ? data?.hits?.slice(0, 5).map(h => {
-                const ret = {...h}
-                delete ret._matchesInfo
-                return ret
-            }) : []} />
+            <Table data={data?.hits ? data?.hits?.slice(0, 5) : []} />
         </>
     );
 };
