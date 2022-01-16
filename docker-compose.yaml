@@ -15,5 +15,15 @@ services:
       - "7700:7700"
     volumes:
       - meilisearch_data:/data.ms
+
+  questdb:
+    image: questdb/questdb
+    ports:
+      - "9000:9000"
+      - "9009:9009/udp"
+      - "8812:8812"
+    volumes:
+      - "questdb_data:/root/.questdb/db"
 volumes:
     meilisearch_data: {}
+    questdb_data: {}

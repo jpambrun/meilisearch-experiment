@@ -1,6 +1,7 @@
 const faker = require('faker');
 const { MeiliSearch } = require('meilisearch');
-
+const {InfluxUdbClient} = require('./InfluxUdbClient');
+const influx = new InfluxUdbClient();
 
 
 
@@ -73,9 +74,10 @@ const { MeiliSearch } = require('meilisearch');
 
     const exams = [];
     for (let b = 0; b < 20000; b++) {
+        const BATCH_SIZE = 1000;
 
-        for (let i = 0; i < 1000; i++) {
-            const patient = patients[(b * 1000 + i) % patients.length];
+        for (let i = 0; i < BATCH_SIZE; i++) {
+            const patient = patients[(b * BATCH_SIZE + i) % patients.length];
 
             const exam = {
                 id: faker.helpers.replaceSymbols('??????#####'),
@@ -96,6 +98,7 @@ const { MeiliSearch } = require('meilisearch');
         let response = await index.addDocuments(exams)
         await client.waitForTask(response.uid, { timeOutMs: 60000, intervalMs: 100 })
         console.log(Date.now() - start)
+        influx.write(`ingest,batchSize=${BATCH_SIZE} dur=${Date.now() - start} ${Date.now() * 1e6}\n`)
         // console.log(response)
     }
 
