@@ -49,7 +49,8 @@ const doDelete = bent('http://localhost:8108/', 'DELETE', [200], {"X-TYPESENSE-A
         org: "ordas"
     }]
 
-    await doPostText('collections/studies/documents/import?action=create', docs.map(d => JSON.stringify(d)).join('\n') ).then(console.log)
+    const ret = await doPostText('collections/studies/documents/import?action=create', docs.map(d => JSON.stringify(d)).join('\n') )
+    console.log(ret.split('\n').map(r=>JSON.parse(r)).every(r=>r.success))
 })();
 
 

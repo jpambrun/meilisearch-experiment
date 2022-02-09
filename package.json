@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "babel  client.js -o out/cli.js",
-    "watch": "watchexec -i out/* -e js,css,html npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-meili": "babel meilisearch/client.js -o out/cli.js",
+    "watch-meili": "watchexec -i out/* -e js,css,html npm run build-meili",
+    "build-type": "babel typesense/client.js -o out/cli.js",
+    "watch-type": "watchexec -i out/* -e js,css,html npm run build-type"
   },
   "author": "",
   "license": "ISC",
