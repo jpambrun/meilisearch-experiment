@@ -21,9 +21,24 @@ const doDelete = bent('http://localhost:8108/', 'DELETE', [200], {"X-TYPESENSE-A
           {"name": "sex", "type": "string", "facet": true  },
           {"name": "modality", "type": "string", "facet": true  },
           {"name": "dob", "type": "int32" },
-          {"name": "date", "type": "int64"}
+          {"name": "examDate", "type": "int64"},
+          {"name": "priority", "type": "int32" },
+          {"name": "imageCount", "type": "int32" },
+          {"name": "unmatchedReason", "type": "int32" },
+          {"name": "facility", "type": "string" },
+          {"name": "lockState", "type": "bool" },
+          {"name": "assignee", "type": "string", "sort": true },
+          {"name": "procState", "type": "int32" },
+          {"name": "bodyPart", "type": "string" },
+          {"name": "indications", "type": "string" },
+          {"name": "lockedBy", "type": "string" },
+          {"name": "referring", "type": "string" },
+          {"name": "receivedDate", "type": "int64"},
+          {"name": "matchStatus", "type": "int32" },
+          {"name": "source", "type": "string" },
+          {"name": "code", "type": "string" },
         ],
-        "default_sorting_field": "date"
+        "default_sorting_field": "examDate"
       }).then(console.log)
 
 
@@ -51,16 +66,21 @@ const doDelete = bent('http://localhost:8108/', 'DELETE', [200], {"X-TYPESENSE-A
         patients.push(patient);
     }
 
+    const referring = [...new Array(1000)].map(() => `${faker.name.lastName()}, ${faker.name.firstName()}`);
+    const radiologist = [...new Array(20)].map(() => `${faker.name.lastName()}, ${faker.name.firstName()}`);
+    const facilities = [...new Array(20)].map(() => faker.commerce.department());
+
     const exams = [];
     for (let b = 0; b < 20000; b++) {
         const BATCH_SIZE = 1000;
 
         for (let i = 0; i < BATCH_SIZE; i++) {
             const patient = patients[(b * BATCH_SIZE + i) % patients.length];
+            const isLocked = Math.random() < 0.01;
 
             const exam = {
                 id: faker.helpers.replaceSymbols('??????#####'),
-                date: faker.date.past(10).getTime(),
+                examDate: faker.date.past(10).getTime(),
                 modality: faker.helpers.randomize(['CT', 'MR', 'US', 'XA', 'MG', 'XR']),
                 studyDescription: faker.company.catchPhrase(),
                 name: patient.name,
@@ -69,7 +89,22 @@ const doDelete = bent('http://localhost:8108/', 'DELETE', [200], {"X-TYPESENSE-A
                 mrn: patient.mrn,
                 accessionNumber: patient.accessionNumber,
                 patientId: patient.id,
-                org: patient.inOrgs[i % patient.inOrgs.length]
+                org: patient.inOrgs[i % patient.inOrgs.length],
+                priority: Math.round(Math.random() * 10),
+                imageCount: Math.round(Math.random() * 2000),
+                unmatchedReason: Math.round(Math.random() * 10),
+                facility: faker.helpers.randomize(facilities),
+                lockState: isLocked,
+                lockedBy: isLocked ? faker.helpers.randomize(radiologist) : "",
+                assignee: Math.random() < 0.01 ? faker.helpers.randomize(radiologist) : "",
+                procState: Math.round(Math.random() * 10),
+                bodyPart: faker.helpers.randomize(['head', 'neck', 'shoulder', 'arm', 'forearm', 'wrist', 'hand', 'chest', 'abdomen', 'pelvis', 'thigh', 'knee', 'calf', 'ankle', 'foot', 'lunk', 'spleen', 'hearth', 'liver', 'prostate']),
+                indications: faker.commerce.productName(),
+                referring: faker.helpers.randomize(referring),
+                matchStatus: Math.round(Math.random() * 10),
+                source: faker.commerce.productMaterial(),
+                code: faker.commerce.color(),
+                receivedDate: faker.date.recent(180).getTime(),
             }
             exams.push(exam)
         }
@@ -88,4 +123,6 @@ const doDelete = bent('http://localhost:8108/', 'DELETE', [200], {"X-TYPESENSE-A
 
 })()
 
-//
+// curl -H "X-TYPESENSE-API-KEY: Hu52dwsas2AdxdE" "http://localhost:8108/collections"
+// curl -H "X-TYPESENSE-API-KEY: Hu52dwsas2AdxdE" "http://localhost:8108/collections/studies/documents/search?q=paul&query_by=name"
+// time curl -H "X-TYPESENSE-API-KEY: Hu52dwsas2AdxdE" "http://localhost:8108/collections/studies/documents/search?q=paul&query_by=name&filter_by=priotity:>5"
